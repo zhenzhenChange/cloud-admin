@@ -5,7 +5,8 @@ import router from "./router";
 
 import "@/assets/css/style.scss";
 
-import { message } from "ant-design-vue";
+import { message, modal } from "ant-design-vue";
+Vue.prototype.$modal = modal;
 Vue.prototype.$message = message;
 
 import http from "./http";

@@ -16,6 +16,10 @@
           @click="collapsed = !collapsed"
           :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         />
+        <a-button type="primary" @click="logout">退出登录</a-button>
+        <span class="mr-20 float-right">
+          <h2>操作员：{{ username }}</h2>
+        </span>
       </a-layout-header>
       <a-layout-content class="home-content">
         <router-view />
@@ -25,13 +29,15 @@
 </template>
 
 <script>
-import { Menu, Icon, Layout } from "ant-design-vue";
+import { mapState } from "vuex";
+import { Menu, Icon, Button, Layout } from "ant-design-vue";
 
 export default {
   name: "Home",
   components: {
     [Icon.name]: Icon,
     [Menu.name]: Menu,
+    [Button.name]: Button,
     [Layout.name]: Layout,
     [Menu.Item.name]: Menu.Item,
     [Menu.SubMenu.name]: Menu.SubMenu,
@@ -46,9 +52,19 @@ export default {
       collapsed: false,
       menu: [
         { text: "用户", icon: "user", path: "/user", index: "/user" },
-        { text: "管理员", icon: "setting", path: "/admin", index: "/admin" }
+        { text: "管理员", icon: "setting", path: "/admin", index: "/admin" },
+        { text: "创建用户", icon: "setting", path: "/create", index: "/create" }
       ]
     };
+  },
+  computed: {
+    ...mapState({ username: state => state.username })
+  },
+  methods: {
+    logout() {
+      this.$router.push("/");
+      localStorage.removeItem("username");
+    }
   }
 };
 </script>

@@ -1,11 +1,13 @@
 <template>
   <div class="user">
     <a-row>
-      <a-col :span="2">
-        <a-button class="mr-10" type="primary" icon="user-add" @click="onCreate">添加</a-button>
+      <a-col :span="4" class="mr-10">
+        <a-input placeholder="请输入账号" allowClear v-model="keyWords" @change="onChange">
+          <a-icon slot="prefix" type="user" />
+        </a-input>
       </a-col>
-      <a-col :span="6">
-        <a-input-search allowClear placeholder="请输入关键词" @search="onSearch" />
+      <a-col :span="2">
+        <a-button type="primary" icon="search" @click="onSearch">搜索</a-button>
       </a-col>
     </a-row>
     <a-table
@@ -23,26 +25,16 @@
             allowClear
             :value="text"
             v-if="record.editable && inputScopedSlots.includes(col)"
-            @change="e => handleChange(e.target.value, record.key, col)"
+            @change="e => onChangeInput(e.target.value, record.key, col)"
           />
           <a-date-picker
             showTime
             :allowClear="false"
-            :value="toMoment(text)"
+            :value="dateToMoment(text)"
             placeholder="请选择时间"
             @change="onChangeDate($event, record.key, col)"
             v-else-if="record.editable && dateScopedSlots.includes(col)"
           />
-          <!-- <a-select
-            :value="text"
-            placeholder="请选择角色"
-            style="display: block;"
-            @change="onChangeSelect($event, record.key, col)"
-            v-else-if="record.editable && selectScopedSlots.includes(col)"
-          >
-            <a-select-option value="1">用户</a-select-option>
-            <a-select-option value="0">管理员</a-select-option>
-          </a-select> -->
           <template v-else>{{ text }}</template>
         </div>
       </template>
@@ -58,7 +50,7 @@
             <a-button type="primary" icon="edit" @click="edit(record.key)" class="mr-10">
               编辑
             </a-button>
-            <a-button type="danger" icon="delete" @click="edit(record.key)">删除</a-button>
+            <a-button type="danger" icon="delete" @click="remove(record.key)">删除</a-button>
           </span>
         </div>
       </template>
@@ -67,18 +59,8 @@
 </template>
 
 <script>
-import UserMixin from "../mixins/User.js";
-import {
-  Row,
-  Col,
-  Icon,
-  Input,
-  Table,
-  // Select,
-  Button,
-  Popconfirm,
-  DatePicker
-} from "ant-design-vue";
+import UserMixin from "../mixins/User";
+import { Row, Col, Icon, Input, Table, Button, Popconfirm, DatePicker } from "ant-design-vue";
 
 export default {
   mixins: [UserMixin],
@@ -89,11 +71,9 @@ export default {
     [Table.name]: Table,
     [Input.name]: Input,
     [Button.name]: Button,
-    // [Select.name]: Select,
     [DatePicker.name]: DatePicker,
     [Popconfirm.name]: Popconfirm,
     [Input.Search.name]: Input.Search
-    // [Select.Option.name]: Select.Option
   }
 };
 </script>
