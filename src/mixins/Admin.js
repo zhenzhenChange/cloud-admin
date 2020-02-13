@@ -60,15 +60,6 @@ const pagination = {
   pageSizeOptions: ["10", "30", "50", "100", "200", "400"]
 };
 
-const rowSelection = {
-  /* onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-  }, */
-  getCheckboxProps: record => ({
-    props: { name: record.name }
-  })
-};
-
 const AdminMixin = {
   data() {
     return {
@@ -76,7 +67,6 @@ const AdminMixin = {
       data: [],
       pagination,
       keyWords: "",
-      rowSelection,
       cacheData: [],
       collapsed: false,
       dateScopedSlots: ["dueTime"],

@@ -9,6 +9,9 @@
       <a-col :span="2">
         <a-button type="primary" icon="search" @click="onSearch">搜索</a-button>
       </a-col>
+      <a-col :span="2">
+        <a-button type="danger" icon="delete" @click="onDelete">批量删除</a-button>
+      </a-col>
     </a-row>
     <a-table
       bordered
@@ -17,7 +20,7 @@
       :columns="columns"
       :dataSource="data"
       :pagination="pagination"
-      :rowSelection="rowSelection"
+      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange }"
     >
       <template :slot="col" slot-scope="text, record" v-for="col in colScopedSlots">
         <div :key="col">
@@ -41,16 +44,37 @@
       <template slot="operation" slot-scope="text, record">
         <div>
           <span v-if="record.editable">
-            <a-button type="dashed" icon="save" @click="save(record.key)" class="mr-10">
+            <a-button
+              icon="save"
+              class="mr-10"
+              type="dashed"
+              :disabled="flag"
+              @click="save(record.key)"
+            >
               保存
             </a-button>
-            <a-button type="danger" icon="minus-circle" @click="cancel(record.key)">取消</a-button>
+            <a-button
+              type="danger"
+              icon="minus-circle"
+              :disabled="flag"
+              @click="cancel(record.key)"
+            >
+              取消
+            </a-button>
           </span>
           <span v-else>
-            <a-button type="primary" icon="edit" @click="edit(record.key)" class="mr-10">
+            <a-button
+              icon="edit"
+              class="mr-10"
+              type="primary"
+              :disabled="flag"
+              @click="edit(record.key)"
+            >
               编辑
             </a-button>
-            <a-button type="danger" icon="delete" @click="remove(record.key)">删除</a-button>
+            <a-button type="danger" icon="delete" @click="remove(record.key)" :disabled="flag"
+              >删除</a-button
+            >
           </span>
         </div>
       </template>
@@ -74,6 +98,46 @@ export default {
     [DatePicker.name]: DatePicker,
     [Popconfirm.name]: Popconfirm,
     [Input.Search.name]: Input.Search
+  },
+  data() {
+    return {
+      selectedRowKeys: []
+    };
+  },
+  computed: {
+    flag() {
+      return this.selectedRowKeys.length === 0 ? false : true;
+    }
+  },
+  methods: {
+    onChange(selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys;
+    },
+    onDelete() {
+      if (this.selectedRowKeys.length === 0) {
+        this.$message.warning("请选择要删除的账号~");
+        return;
+      }
+      const args = { userIds: this.selectedRowKeys };
+      this.$modal.confirm({
+        icon: "delete",
+        okText: "确定",
+        centered: true,
+        keyboard: false,
+        okType: "danger",
+        title: "删除用户",
+        cancelText: "取消",
+        content: "确定要删除吗？",
+        onOk: async () => {
+          const { msg } = await this.$http.post("/admin/deleteUser", args);
+          this.$message.info(msg);
+          this._initData();
+          this.keyWords = "";
+          this.selectedRowKeys = [];
+        },
+        onCancel() {}
+      });
+    }
   }
 };
 </script>
