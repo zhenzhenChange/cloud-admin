@@ -49,6 +49,10 @@ export default {
         if (err) return;
         const args = { user_account: values.username, user_pwd: values.password };
         const { data, msg, code } = await this.$http.post("/login", args);
+        if (data.userRole) {
+          this.$message.error("请用管理员账号登录~");
+          return;
+        }
         if (code === 0) {
           this.$store.commit("saveUserName", data.userName);
           this.$message.success(msg);
