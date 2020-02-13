@@ -61,9 +61,9 @@ const pagination = {
 };
 
 const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
+  /* onChange: (selectedRowKeys, selectedRows) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
-  },
+  }, */
   getCheckboxProps: record => ({
     props: { name: record.name }
   })
