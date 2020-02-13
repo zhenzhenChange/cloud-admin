@@ -1,39 +1,44 @@
 import moment from "moment";
-const data = [];
-for (let i = 1; i < 201; i++) {
-  data.push({
-    key: i.toString(),
-    username: `账号mixins${i}`,
-    password: `ABCE${i}`,
-    limit: `账号上限${i}`,
-    dueTime: moment(new Date().getTime()).format("YYYY-MM-DD HH:mm:ss")
-  });
-}
 
 const columns = [
   {
-    width: "15%",
-    title: "账号",
+    width: "5%",
+    title: "序号",
     align: "center",
-    dataIndex: "username",
-    scopedSlots: { customRender: "username" }
+    dataIndex: "num",
+    scopedSlots: { customRender: "num" }
   },
   {
-    width: "15%",
+    title: "账号",
+    align: "center",
+    dataIndex: "account",
+    scopedSlots: { customRender: "account" }
+  },
+  {
     title: "密码",
     align: "center",
     dataIndex: "password",
     scopedSlots: { customRender: "password" }
   },
   {
-    width: "15%",
+    title: "昵称",
+    align: "center",
+    dataIndex: "username",
+    scopedSlots: { customRender: "username" }
+  },
+  {
     align: "center",
     title: "账号上限",
     dataIndex: "limit",
     scopedSlots: { customRender: "limit" }
   },
   {
-    width: "15%",
+    align: "center",
+    title: "账号是否有效",
+    dataIndex: "isValid",
+    scopedSlots: { customRender: "isValid" }
+  },
+  {
     align: "center",
     title: "到期时间",
     dataIndex: "dueTime",
@@ -48,27 +53,59 @@ const columns = [
 ];
 
 const pagination = {
-  total: 200,
   position: "both",
   showQuickJumper: true,
   showSizeChanger: true,
   showTotal: total => `共有${total}条数据`,
-  pageSizeOptions: ["10", "30", "50", "100", "200", "400"]
+  pageSizeOptions: ["2", "10", "30", "50", "100", "200", "400"]
+};
+
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, "selectedRows: ", selectedRows);
+  },
+  getCheckboxProps: record => ({
+    props: { name: record.name }
+  })
 };
 
 const UserMixin = {
   data() {
-    this.cacheData = data.map(item => ({ ...item }));
     return {
-      data,
       columns,
+      data: [],
       pagination,
+      rowSelection,
+      cacheData: [],
       collapsed: false,
       dateScopedSlots: ["dueTime"],
-      inputScopedSlots: ["password", "limit"]
+      // selectScopedSlots: ["isValid"],
+      inputScopedSlots: ["account", "password", "username", "limit"],
+      colScopedSlots: ["account", "password", "username", "limit", "dueTime", "isValid"]
     };
   },
+  created() {
+    this._initData();
+  },
   methods: {
+    async _initData() {
+      const params = { userRole: 0, pageIndex: "0", pageSize: "999" };
+      const { msg, data } = await this.$http.get("/admin/getUser", { params });
+      this.$message.info(msg);
+      data.forEach((item, index) => {
+        this.data.push({
+          num: index + 1,
+          key: item.userId,
+          limit: item.userMaxAdd,
+          password: item.userPwd,
+          username: item.userName,
+          account: item.userAccount,
+          isValid: item.userIsValid ? "有效" : "无效",
+          dueTime: moment(item.userExpirationDate).format("YYYY-MM-DD HH:mm:ss")
+        });
+      });
+      this.cacheData = this.data.map(item => ({ ...item }));
+    },
     handleChange(value, key, column) {
       const newData = [...this.data];
       const target = newData.filter(item => key === item.key)[0];
@@ -110,14 +147,25 @@ const UserMixin = {
     toMoment(value) {
       return moment(value);
     },
-    onChangeDate(event, rowKey, column) {
+    onChangeDate(event, key, column) {
       const newData = [...this.data];
-      const target = newData.filter(item => rowKey === item.key)[0];
+      const target = newData.filter(item => key === item.key)[0];
       if (target) {
         target[column] = moment(event).format("YYYY-MM-DD HH:mm:ss");
         this.data = newData;
       }
     }
+    /*  onChangeSelect(event, key, column) {
+      console.log(event);
+      const newData = [...this.data];
+      const target = newData.filter(item => key === item.key)[0];
+      if (target) {
+        target[column] = event;
+        // 根据select框的值自动带出某个input的值 - 因为第三列列名为c
+        event === "lucy" ? (target.c = "根据lucy带出的值") : (target.c = "根据jack带出的值");
+        this.data = newData;
+      }
+    } */
   }
 };
 

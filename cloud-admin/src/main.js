@@ -8,6 +8,9 @@ import "@/assets/css/style.scss";
 import { message } from "ant-design-vue";
 Vue.prototype.$message = message;
 
+import http from "./http";
+Vue.prototype.$http = http;
+
 Vue.config.productionTip = false;
 
 new Vue({ router, store, render: h => h(App) }).$mount("#app");

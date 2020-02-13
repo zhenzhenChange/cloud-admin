@@ -15,12 +15,9 @@
       :columns="columns"
       :dataSource="data"
       :pagination="pagination"
+      :rowSelection="rowSelection"
     >
-      <template
-        :slot="col"
-        slot-scope="text, record"
-        v-for="col in ['password', 'dueTime', 'limit']"
-      >
+      <template :slot="col" slot-scope="text, record" v-for="col in colScopedSlots">
         <div :key="col">
           <a-input
             allowClear
@@ -33,9 +30,19 @@
             :allowClear="false"
             :value="toMoment(text)"
             placeholder="请选择时间"
-            v-else-if="record.editable && col === 'dueTime'"
             @change="onChangeDate($event, record.key, col)"
+            v-else-if="record.editable && dateScopedSlots.includes(col)"
           />
+          <!-- <a-select
+            :value="text"
+            placeholder="请选择角色"
+            style="display: block;"
+            @change="onChangeSelect($event, record.key, col)"
+            v-else-if="record.editable && selectScopedSlots.includes(col)"
+          >
+            <a-select-option value="1">用户</a-select-option>
+            <a-select-option value="0">管理员</a-select-option>
+          </a-select> -->
           <template v-else>{{ text }}</template>
         </div>
       </template>
@@ -61,7 +68,17 @@
 
 <script>
 import UserMixin from "../mixins/User.js";
-import { Row, Col, Icon, Input, Table, Button, Popconfirm, DatePicker } from "ant-design-vue";
+import {
+  Row,
+  Col,
+  Icon,
+  Input,
+  Table,
+  // Select,
+  Button,
+  Popconfirm,
+  DatePicker
+} from "ant-design-vue";
 
 export default {
   mixins: [UserMixin],
@@ -72,9 +89,11 @@ export default {
     [Table.name]: Table,
     [Input.name]: Input,
     [Button.name]: Button,
+    // [Select.name]: Select,
     [DatePicker.name]: DatePicker,
     [Popconfirm.name]: Popconfirm,
     [Input.Search.name]: Input.Search
+    // [Select.Option.name]: Select.Option
   }
 };
 </script>

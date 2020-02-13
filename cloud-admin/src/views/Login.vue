@@ -45,9 +45,11 @@ export default {
   },
   methods: {
     login() {
-      this.form.validateFields((err, values) => {
+      this.form.validateFields(async (err, values) => {
         if (err) return;
-        console.log("Received values of form: ", values);
+        const args = { user_account: values.username, user_pwd: values.password };
+        const res = await this.$http.post("/login", args);
+        console.log(res);
         this.$router.push("/user");
         this.$message.success("登录成功~");
       });
