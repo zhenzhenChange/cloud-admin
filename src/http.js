@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const http = axios.create({ baseURL: "/cloud-admin-api" });
+const http = axios.create({ baseURL: process.env.VUE_APP_AXIOS_BASE_URL });
 
 http.interceptors.request.use(
   config => config,

@@ -95,7 +95,7 @@ const AdminMixin = {
     },
     async _initData() {
       this.data = [];
-      const params = { userRole: 0, pageIndex: "0", pageSize: "999" };
+      const params = { userRole: 0 };
       const { msg, data } = await this.$http.get("/admin/getUser", { params });
       this.$message.info(msg);
       this._initDataStructure(data);
